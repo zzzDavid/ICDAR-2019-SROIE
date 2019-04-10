@@ -18,8 +18,8 @@ def checkImageIsValid(imageBin):
 
 def writeCache(env, cache):
     with env.begin(write=True) as txn:
-        for k, v in cache.iteritems():
-            txn.put(k, v)
+        for k, v in cache.items():
+            txn.put(str(k).encode(), str(v).encode())
 
 
 def createDataset(outputPath, imagePathList, labelList, lexiconList=None, checkValid=True):
@@ -44,7 +44,7 @@ def createDataset(outputPath, imagePathList, labelList, lexiconList=None, checkV
         if not os.path.exists(imagePath):
             print('%s does not exist' % imagePath)
             continue
-        with open(imagePath, 'r') as f:
+        with open(imagePath, 'rb') as f:
             imageBin = f.read()
         if checkValid:
             if not checkImageIsValid(imageBin):
@@ -78,15 +78,13 @@ def read_text(path):
 
 if __name__ == '__main__':
     # lmdb 输出目录
-    outputPath = '../dataset/train/'  # 训练集和验证集要跑两遍这个程序，分两次生成
-    # outputPath = '../dataset/val/'
+    #outputPath = 'dataset/train/'  # 训练集和验证集要跑两遍这个程序，分两次生成
+    outputPath = 'dataset/val/'
 
-    path = "../data_train/*.jpg"  # 将txt与jpg的都放在同一个文件里面
-    # path = "../data_valid/*.jpg"
-
-    imagePathList = glob.glob(path)
+    filenames = [os.path.splitext(f)[0] for f in glob.glob("data_valid/*.jpg")]
+    jpg_files = [s + ".jpg" for s in filenames]
     imgLabelLists = []
-    for p in imagePathList:
+    for p in jpg_files:
         try:
             imgLabelLists.append((p, read_text(p.replace('.jpg', '.txt'))))
         except:
