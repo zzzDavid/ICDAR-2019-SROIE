@@ -14,8 +14,8 @@ import dataset
 import models.crnn as crnn
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--trainRoot', required=True, help='path to dataset')
-parser.add_argument('--valRoot', required=True, help='path to dataset')
+parser.add_argument('--trainroot', required=True, help='path to dataset')
+parser.add_argument('--valroot', required=True, help='path to dataset')
 parser.add_argument('--workers', type=int, help='number of data loading workers', default=2)
 parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
 parser.add_argument('--imgH', type=int, default=32, help='the height of the input image to network')
@@ -38,7 +38,7 @@ parser.add_argument('--adam', action='store_true', help='Whether to use adam (de
 parser.add_argument('--adadelta', action='store_true', help='Whether to use adadelta (default is rmsprop)')
 parser.add_argument('--keep_ratio', action='store_true', help='whether to keep ratio for image resize')
 parser.add_argument('--manualSeed', type=int, default=1234, help='reproduce experiemnt')
-parser.add_argument('--random_sample', action='store_true', help='whether to sample the dataset with random sampler')
+parser.add_argument('--random_sample', action='store_true', default=True, help='whether to sample the dataset with random sampler')
 opt = parser.parse_args()
 print(opt)
 

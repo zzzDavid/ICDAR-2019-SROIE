@@ -78,10 +78,10 @@ def read_text(path):
 
 if __name__ == '__main__':
     # lmdb 输出目录
-    #outputPath = 'dataset/train/'  # 训练集和验证集要跑两遍这个程序，分两次生成
-    outputPath = 'dataset/val/'
+    outputPath = 'dataset/train/'  # 训练集和验证集要跑两遍这个程序，分两次生成
+    #outputPath = 'dataset/val/'
 
-    filenames = [os.path.splitext(f)[0] for f in glob.glob("data_valid/*.jpg")]
+    filenames = [os.path.splitext(f)[0] for f in glob.glob("data_train/*.jpg")]
     jpg_files = [s + ".jpg" for s in filenames]
     imgLabelLists = []
     for p in jpg_files:

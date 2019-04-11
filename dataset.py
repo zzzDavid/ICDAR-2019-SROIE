@@ -29,7 +29,7 @@ class lmdbDataset(Dataset):
             sys.exit(0)
 
         with self.env.begin(write=False) as txn:
-            nSamples = int(txn.get('num-samples'))
+            nSamples = int(txn.get(b'num-samples'))
             self.nSamples = nSamples
 
         self.transform = transform
@@ -42,7 +42,7 @@ class lmdbDataset(Dataset):
         assert index <= len(self), 'index range error'
         index += 1
         with self.env.begin(write=False) as txn:
-            img_key = 'image-%09d' % index
+            img_key = b'image-%09d' % index
             imgbuf = txn.get(img_key)
 
             buf = six.BytesIO()
