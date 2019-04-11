@@ -19,7 +19,7 @@ def checkImageIsValid(imageBin):
 def writeCache(env, cache):
     with env.begin(write=True) as txn:
         for k, v in cache.items():
-            txn.put(str(k).encode(), str(v).encode())
+            txn.put(k, v)
 
 
 def createDataset(outputPath, imagePathList, labelList, lexiconList=None, checkValid=True):
@@ -76,10 +76,9 @@ def read_text(path):
 
     return text
 
-if __name__ == '__main__':
-    # lmdb 输出目录
-    outputPath = 'dataset/train/'  # 训练集和验证集要跑两遍这个程序，分两次生成
-    #outputPath = 'dataset/val/'
+
+def create_train_set():
+    outputPath = 'dataset/train/'
 
     filenames = [os.path.splitext(f)[0] for f in glob.glob("data_train/*.jpg")]
     jpg_files = [s + ".jpg" for s in filenames]
@@ -97,3 +96,28 @@ if __name__ == '__main__':
     txtLists = [p[1] for p in imgLabelList]
 
     createDataset(outputPath, imgPaths, txtLists, lexiconList=None, checkValid=True)
+
+
+def create_val_set():
+    outputPath = 'dataset/val/'
+
+    filenames = [os.path.splitext(f)[0] for f in glob.glob("data_valid/*.jpg")]
+    jpg_files = [s + ".jpg" for s in filenames]
+    imgLabelLists = []
+    for p in jpg_files:
+        try:
+            imgLabelLists.append((p, read_text(p.replace('.jpg', '.txt'))))
+        except:
+            continue
+
+    # imgLabelList = [ (p, read_text(p.replace('.jpg', '.txt'))) for p in imagePathList]
+    # sort labelList by length of label
+    imgLabelList = sorted(imgLabelLists, key=lambda x: len(x[1]))
+    imgPaths = [p[0] for p in imgLabelList]
+    txtLists = [p[1] for p in imgLabelList]
+
+    createDataset(outputPath, imgPaths, txtLists, lexiconList=None, checkValid=True)
+
+if __name__ == '__main__':
+    create_train_set()
+    create_val_set()

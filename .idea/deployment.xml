@@ -12,7 +12,7 @@
       <paths name="xiusj@172.18.217.149:22">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/pycharm_project_842" local="$PROJECT_DIR$" />
+            <mapping deploy="/public/users/xiusj/zns/ICDAR-2019-SROIE" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
