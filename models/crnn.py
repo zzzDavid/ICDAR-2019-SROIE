@@ -26,9 +26,9 @@ class CRNN(nn.Module):
         super(CRNN, self).__init__()
         assert imgH % 16 == 0, 'imgH has to be a multiple of 16'
 
-        ks = [3, 3, 3, 3, 3, 3, 2]
-        ps = [1, 1, 1, 1, 1, 1, 0]
-        ss = [1, 1, 1, 1, 1, 1, 1]
+        ks = [3, 3, 3, 3, 3, 3, 2] # kernel size
+        ps = [1, 1, 1, 1, 1, 1, 0] # padding
+        ss = [1, 1, 1, 1, 1, 1, 1] # stride
         nm = [64, 128, 256, 256, 512, 512, 512]
 
         cnn = nn.Sequential()
@@ -63,17 +63,19 @@ class CRNN(nn.Module):
         self.cnn = cnn
         self.rnn = nn.Sequential(
             BidirectionalLSTM(512, nh, nh),
+            BidirectionalLSTM(nh, nh, nh),
             BidirectionalLSTM(nh, nh, nclass))
 
     def forward(self, input):
         # conv features
         conv = self.cnn(input)
-        b, c, h, w = conv.size()
+        b, c, h, w = conv.size() # 64 512 1 imgW/4+1
+        # print(conv.size())
         assert h == 1, "the height of conv must be 1"
         conv = conv.squeeze(2)
         conv = conv.permute(2, 0, 1)  # [w, b, c]
 
         # rnn features
         output = self.rnn(conv)
-
+        # print(output.size())
         return output
