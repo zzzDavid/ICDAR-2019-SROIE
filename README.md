@@ -1,1 +1,3 @@
 # ICDAR-2019-SROIE
+
+Ok I'll add some documentation and clean up...
