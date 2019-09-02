@@ -50,7 +50,7 @@ The competition is divided into 3 tasks:
 
 3. **Key Information Extraction from Scanned Receipts**: The aim of this task is to extract texts of a number of key fields from given receipts, and save the texts for each receipt image in a `json` file.
 
-## Project Structure
+## Usage Guide
 
 This repository contains our trials and solutions of three tasks. Inside each folder there are documentations of the method we adopted and guide of usage.
 
