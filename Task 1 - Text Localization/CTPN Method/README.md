@@ -2,6 +2,16 @@
 
 This is a tensorflow implementation of [CTPN](https://arxiv.org/abs/1609.03605) by @tianzhi0549 and @varun-suresh. Many thanks to their great work and pre-trained models, and the original repository can be found [here](https://github.com/tianzhi0549/CTPN.git). More detail of set-up and training process can be found in their [documentation](https://github.com/tianzhi0549/CTPN/blob/master/README.md). Here we document how we used this work to solve task 1.
 
+## Introduction
+
+A novel Connectionist Text Proposal Network (CTPN) published by Tian, Zhi, et al. is deployed in this model. The CTPN model develops a vertical anchor mechanism for character detection whose result is refined to generate an accurate bounding box prediction.
+
+![](../../Media/CTPN.png)
+
+Most state-of-art algorithms are based on the bounding box regression or character-level feature extraction. However, this method combines the character-level bounding box regression with label prediction. A CNN is naturally used as a feature extractor, whose output is divided and fed into a bi-directional LSTM and fully -connected layer for anchor prediction and label classification. The end-to-end trainable model works with the various scale of texts even with some extremely ambiguous text.
+
+It achieves 0.88 and 0.61 F-measure on ICDAR 2013 and 2015 benchmarks, according to the [original paper](https://arxiv.org/abs/1609.03605).
+
 ## Requirements
 - tqdm==4.11.2
 - opencv-python==3.4.0.12
