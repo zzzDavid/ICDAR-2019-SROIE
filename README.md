@@ -2,6 +2,7 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
+
 ## Background
 This repository is our team's solution of 2019 [ICDAR-SROIE](https://rrc.cvc.uab.es/?ch=13&com=introduction) competition. As the name suggests, this competition is mainly about Optical Character Recognition and information extraction:
 
@@ -48,3 +49,4 @@ The competition is divided into 3 tasks:
 2. **Scanned Receipt OCR**: The aim of this task is to accurately recognize the text in a receipt image. No localisation information is provided, or is required. 
 
 3. **Key Information Extraction from Scanned Receipts**: The aim of this task is to extract texts of a number of key fields from given receipts, and save the texts for each receipt image in a `json` file.
+
