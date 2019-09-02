@@ -12,7 +12,7 @@ This repository is our team's solution of 2019 [ICDAR-SROIE](https://rrc.cvc.uab
 
 The dataset has 1000 whole scanned receipt images. Each receipt image contains around about four key text fields, such as goods name, unit price and total cost, etc. The text annotated in the dataset mainly consists of digits and English characters. An example scanned receipt is shown below:
 
-![Dataset Sample](./Media/data_sample.jpg)
+<div align=center><img src="./Media/data_sample.jpg" width="181"/></div>
 
 The dataset is split into a training/validation set (“trainval”) and a test set (“test”). The “trainval” set consists of 600 receipt images, the “test” set consists of 400 images.
 
