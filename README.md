@@ -61,6 +61,7 @@ This repository contains our trials and solutions of three tasks. Inside each fo
 ## Result
 
 The result precision/recall/Hmean of our solution are listed as follows:
+
 |Task|Recall|Precision|Hmean|Evaluation Method|
 |:-:|:-:|:-:|:-:|:-|
 | Task 1| 85.23% | 88.73%| 86.94% | Deteval |

@@ -4,6 +4,7 @@ This is a `pytorch` implementation of CRNN, which is based on @meijieru's reposi
 
 ## Introduction
 
-![CTC](../Media/CTC.png)
+<div align=center><img src="../Media/CTC.png" width="600"/></div>
 
-![CRNN](../Media/CRNN.png)
+
+<div align=center><img src="../Media/CRNN.png" width="600"/></div>
