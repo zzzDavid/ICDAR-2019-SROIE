@@ -63,7 +63,7 @@ class lmdbDataset(Dataset):
             if self.target_transform is not None:
                 label = self.target_transform(label)
 
-        return (img, label)
+        return (img, label.split('\'')[1])
 
 
 class resizeNormalize(object):
