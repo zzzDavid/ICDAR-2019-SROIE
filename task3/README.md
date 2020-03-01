@@ -13,7 +13,14 @@ This is a method that tackles the key information extraction problem as a charac
 
 Training data is available at `./data/`. To train a model, just run this command at root directory
 ```shell
-python ./src/main.py
+$ python ./src/train.py
 ```
-Explore `main.py` for more detail of configuration.
+or to test the model:
 
+```shell
+$ python ./src/test.py
+```
+
+
+
+The original repo of task 3 is [here](https://github.com/patrick22414/sroie-task3).

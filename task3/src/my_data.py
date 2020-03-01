@@ -2,7 +2,7 @@ import json
 import os
 import random
 from os import path
-from string import ascii_uppercase, digits, punctuation, ascii_lowercase
+from string import ascii_uppercase, digits, punctuation
 
 import colorama
 import numpy
@@ -12,19 +12,38 @@ from colorama import Fore
 from torch.utils import data
 
 from my_classes import TextBox, TextLine
+from my_utils import robust_padding
 
-VOCAB = ascii_uppercase + ascii_lowercase + digits + punctuation + " ·\t\n"
+VOCAB = ascii_uppercase + digits + punctuation + " \t\n"
 
 
 class MyDataset(data.Dataset):
-    def __init__(self, dict_path="data/data_dict.pth", device="cpu", val_size=76):
-        data_items = list(torch.load(dict_path).items())
-        random.shuffle(data_items)
+    def __init__(
+        self, dict_path="data/data_dict.pth", device="cpu", val_size=76, test_path=None
+    ):
+        if dict_path is None:
+            self.val_dict = {}
+            self.train_dict = {}
+        else:
+            data_items = list(torch.load(dict_path).items())
+            random.shuffle(data_items)
 
-        self.val_dict = dict(data_items[:val_size])
-        self.train_dict = dict(data_items[val_size:])
+            self.val_dict = dict(data_items[:val_size])
+            self.train_dict = dict(data_items[val_size:])
+
+        if test_path is None:
+            self.test_dict = {}
+        else:
+            self.test_dict = torch.load(test_path)
 
         self.device = device
+
+    def get_test_data(self, key):
+        text = self.test_dict[key]
+        text_tensor = torch.zeros(len(text), 1, dtype=torch.long)
+        text_tensor[:, 0] = torch.LongTensor([VOCAB.find(c) for c in text])
+
+        return text_tensor.to(self.device)
 
     def get_train_data(self, batch_size=8):
         samples = random.sample(self.train_dict.keys(), batch_size)
@@ -32,11 +51,9 @@ class MyDataset(data.Dataset):
         texts = [self.train_dict[k][0] for k in samples]
         labels = [self.train_dict[k][1] for k in samples]
 
-        maxlen = max(len(s) for s in texts)
-        texts = [s.ljust(maxlen, " ") for s in texts]
-        labels = [
-            numpy.pad(a, (0, maxlen - len(a)), mode="constant", constant_values=0) for a in labels
-        ]
+        robust_padding(texts, labels)
+
+        maxlen = max(len(t) for t in texts)
 
         text_tensor = torch.zeros(maxlen, batch_size, dtype=torch.long)
         for i, text in enumerate(texts):
@@ -57,7 +74,8 @@ class MyDataset(data.Dataset):
         maxlen = max(len(s) for s in texts)
         texts = [s.ljust(maxlen, " ") for s in texts]
         labels = [
-            numpy.pad(a, (0, maxlen - len(a)), mode="constant", constant_values=0) for a in labels
+            numpy.pad(a, (0, maxlen - len(a)), mode="constant", constant_values=0)
+            for a in labels
         ]
 
         text_tensor = torch.zeros(maxlen, batch_size, dtype=torch.long)
@@ -73,10 +91,12 @@ class MyDataset(data.Dataset):
 
 def get_files(data_path="data/"):
     json_files = sorted(
-        (f for f in os.scandir(data_path) if f.name.endswith(".json")), key=lambda f: f.path
+        (f for f in os.scandir(data_path) if f.name.endswith(".json")),
+        key=lambda f: f.path,
     )
     txt_files = sorted(
-        (f for f in os.scandir(data_path) if f.name.endswith(".txt")), key=lambda f: f.path
+        (f for f in os.scandir(data_path) if f.name.endswith(".txt")),
+        key=lambda f: f.path,
     )
 
     assert len(json_files) == len(txt_files)
@@ -100,8 +120,23 @@ def sort_text(txt_file):
     return "\n".join([str(text_line) for text_line in text_lines])
 
 
+def create_test_data():
+    keys = sorted(
+        path.splitext(f.name)[0]
+        for f in os.scandir("tmp/task3-test(347p)")
+        if f.name.endswith(".jpg")
+    )
+
+    files = ["tmp/text.task1&2-test(361p)/" + s + ".txt" for s in keys]
+
+    test_dict = {}
+    for k, f in zip(keys, files):
+        test_dict[k] = sort_text(f)
+
+    torch.save(test_dict, "data/test_dict.pth")
+
+
 def create_data(data_path="tmp/data/"):
-    raise DeprecationWarning
 
     json_files, txt_files = get_files(data_path)
     keys = [path.splitext(f.name)[0] for f in json_files]
@@ -117,26 +152,40 @@ def create_data(data_path="tmp/data/"):
 
         text_class = numpy.zeros(len(text), dtype=int)
 
+        print()
+        print(json_file.path, txt_file.path)
         for i, k in enumerate(iter(key_info)):
-            if k == "total":
-                continue
-
             v = key_info[k]
-            if not v in text_space:
-                s = None
-                e = 0
-                while s is None and e < 3:
-                    e += 1
-                    s = regex.search("(" + v + "){e<=" + str(e) + "}", text_space)
-                v = s[0]
+            if k == "total":
+                s = regex.search(
+                    r"(\bTOTAL[^C]*ROUND[^C]*)(" + v + r")(\b)", text_space
+                )
+                if s is None:
+                    s = regex.search(r"(\bTOTAL[^C]*)(" + v + r")(\b)", text_space)
+                    if s is None:
+                        s = regex.search(r"(\b)(" + v + r")(\b)", text_space)
+                        if s is None:
+                            s = regex.search(r"()(" + v + r")()", text_space)
+                v = s[2]
+                text_class[range(*s.span(2))] = i + 1
+            else:
+                if not v in text_space:
+                    s = None
+                    e = 0
+                    while s is None and e < 3:
+                        e += 1
+                        s = regex.search(
+                            r"(\b" + v + r"\b){e<=" + str(e) + r"}", text_space
+                        )
+                    v = s[0]
 
-            pos = text_space.find(v)
-            text_class[pos : pos + len(v)] = i + 1
+                pos = text_space.find(v)
+                text_class[pos : pos + len(v)] = i + 1
 
         data_dict[key] = (text, text_class)
 
-        print(txt_file.path)
-        color_print(text, text_class)
+        # print(txt_file.path)
+        # color_print(text, text_class)
 
     return keys, data_dict
 
@@ -159,7 +208,21 @@ def color_print(text, text_class):
 
 
 if __name__ == "__main__":
-    dataset = MyDataset()
-    text, truth = dataset.get_train_data()
-    print(text)
-    print(truth)
+    create_test_data()
+
+    # dataset = MyDataset("data/data_dict2.pth")
+    # text, truth = dataset.get_train_data()
+    # print(text)
+    # print(truth)
+    # dict3 = torch.load("data/data_dict3.pth")
+    # for k in dict3.keys():
+    #     text, text_class = dict3[k]
+    #     color_print(text, text_class)
+
+    # keys, data_dict = create_data()
+    # torch.save(data_dict, "data/data_dict4.pth")
+
+    # s = "START 0 TOTAL:1.00, START TOTAL: 1.00 END"
+    # rs = regex.search(r"(\sTOTAL.*)(1.00)(\s)", s)
+    # for i in range(len(rs)):
+    #     print(repr(rs[i]), rs.span(i))
