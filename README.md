@@ -16,32 +16,30 @@ The dataset has 1000 whole scanned receipt images. Each receipt image contains a
 
 The dataset is split into a training/validation set (“trainval”) and a test set (“test”). The “trainval” set consists of 600 receipt images, the “test” set consists of 400 images.
 
-**Dataset Download:** [Google Drive](https://drive.google.com/open?id=1ShItNWXyiY1tFDM5W02bceHuJjyeeJl2) [Baidu NetDisk](https://pan.baidu.com/s/1a57eKCSq8SV8Njz8-jO4Ww#list/path=%2FSROIE2019&parentPath=%2F)
+**Dataset Download:** [Google Drive](https://drive.google.com/open?id=1ShItNWXyiY1tFDM5W02bceHuJjyeeJl2)/[Baidu NetDisk](https://pan.baidu.com/s/1a57eKCSq8SV8Njz8-jO4Ww#list/path=%2FSROIE2019&parentPath=%2F)
 
 For receipt OCR task, each image in the dataset is annotated with text bounding boxes (bbox) and the transcript of each text bbox. Locations are annotated as rectangles with four vertices, which are in clockwise order starting from the top. Annotations for an image are stored in a text file with the same file name. The annotation format is similar to that of ICDAR2015 dataset, which is shown below:
 
 ```
-x1_1, y1_1,x2_1,y2_1,x3_1,y3_1,x4_1,y4_1, transcript_1
+x1_1, y1_1,x2_1,y2_1,x3_1,y3_1,x4_1,y4_1,transcript_1
 
-x1_2,y1_2,x2_2,y2_2,x3_2,y3_2,x4_2,y4_2, transcript_2
+x1_2,y1_2,x2_2,y2_2,x3_2,y3_2,x4_2,y4_2,transcript_2
 
-x1_3,y1_3,x2_3,y2_3,x3_3,y3_3,x4_3,y4_3, transcript_3
+x1_3,y1_3,x2_3,y2_3,x3_3,y3_3,x4_3,y4_3,transcript_3
 
 …
 ```
 
 For the information extraction task, each image in the dataset is annotated with a text file with format shown below:
-```
-{"company": "STARBUCKS STORE #10208",
-
-"date": "14/03/2015",
-
-"address": "11302 EUCLID AVENUE, CLEVELAND, OH (216) 229-0749",
-
-"total": "4.95", 
+```json
+{
+  "company": "STARBUCKS STORE #10208",
+  "address": "11302 EUCLID AVENUE, CLEVELAND, OH (216) 229-0749",
+  "date": "14/03/2015",
+  "total": "4.95", 
 }
 ```
- 
+
 ### Tasks
 
 The competition is divided into 3 tasks:
