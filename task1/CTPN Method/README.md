@@ -18,27 +18,27 @@ It achieves 0.88 and 0.61 F-measure on ICDAR 2013 and 2015 benchmarks, according
 - Shapely==1.6.4.post1
 - matplotlib==1.5.3
 - numpy==1.14.2
-- tensorflow-gpu==1.4.0
+- tensorflow-gpu==1.12.0
 - Cython==0.24.1
 - ipython==5.1.0
 
 ## Install
 The utilities of this project, non-maximum suppression `nms` and bounding box `bbox` are written in cython, which needs to be built first:
 ```shell
-cd utils/bbox
-chmod +x make.sh
-./make.sh
+$ cd utils/bbox
+$ chmod +x make.sh
+$ ./make.sh
 ```
 It will generate a `nms.so` and a `bbox.so` in current folder.
 
 ## Prediction
 1.  Build utilities as mentioned in `Install` part
-2. Download the ckpt file from [google drive](https://drive.google.com/file/d/1HcZuB_MHqsKhKEKpfF1pEU85CYy4OlWO/view?usp=sharing) or [baidu yun](https://pan.baidu.com/s/1BNHt_9fiqRPGmEXPaxaFXw)
-3. Put checkpoints_mlt/ in text-detection-ctpn/
+2. Download the ckpt file from [Google Drive](https://drive.google.com/file/d/1HcZuB_MHqsKhKEKpfF1pEU85CYy4OlWO/view?usp=sharing) or [Baidu NetDisk](https://pan.baidu.com/s/1BNHt_9fiqRPGmEXPaxaFXw)
+3. Put checkpoints_mlt/ in `task1/CTPN Method/`
 4. Put images to predict in `data/demo/`, the results will be saved in `data/res/`, and run demo in the root directory 
 
 ```shell
-python ./main/demo.py
+$ python ./main/demo.py
 ```
 5. The output result would be at `data/res/`. An example output is under this path, whose names are `X00016469670.jpg` and `X00016469670.txt`:
 ```
