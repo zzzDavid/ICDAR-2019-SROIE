@@ -6,6 +6,7 @@ This is a method that tackles the key information extraction problem as a charac
 ## Dependency
 
 - PyTorch 
+- regex
 - numpy
 - colorama
 
