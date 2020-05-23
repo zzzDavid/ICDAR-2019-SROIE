@@ -10,13 +10,15 @@ This repository is our team's solution of 2019 [ICDAR-SROIE](https://rrc.cvc.uab
 
 ### Dataset and Annotations
 
+The original dataset provided by ICDAR-SROIE has a few mistakes. This has been corrected by `scripts/check_data.py` and you can just use the `data` folder in this repo.
+
+**Original dataset:** [Google Drive](https://drive.google.com/open?id=1ShItNWXyiY1tFDM5W02bceHuJjyeeJl2)/[Baidu NetDisk](https://pan.baidu.com/s/1a57eKCSq8SV8Njz8-jO4Ww#list/path=%2FSROIE2019&parentPath=%2F)
+
 The dataset has 1000 whole scanned receipt images. Each receipt image contains around about four key text fields, such as goods name, unit price and total cost, etc. The text annotated in the dataset mainly consists of digits and English characters. An example scanned receipt is shown below:
 
 <div align=center><img src="./Media/data_sample.jpg" width="300"/></div>
 
 The dataset is split into a training/validation set (“trainval”) and a test set (“test”). The “trainval” set consists of 600 receipt images, the “test” set consists of 400 images.
-
-**Dataset Download:** [Google Drive](https://drive.google.com/open?id=1ShItNWXyiY1tFDM5W02bceHuJjyeeJl2)/[Baidu NetDisk](https://pan.baidu.com/s/1a57eKCSq8SV8Njz8-jO4Ww#list/path=%2FSROIE2019&parentPath=%2F)
 
 For receipt OCR task, each image in the dataset is annotated with text bounding boxes (bbox) and the transcript of each text bbox. Locations are annotated as rectangles with four vertices, which are in clockwise order starting from the top. Annotations for an image are stored in a text file with the same file name. The annotation format is similar to that of ICDAR2015 dataset, which is shown below:
 
@@ -52,6 +54,22 @@ The competition is divided into 3 tasks:
 3. **Key Information Extraction from Scanned Receipts**: The aim of this task is to extract texts of a number of key fields from given receipts, and save the texts for each receipt image in a `json` file.
 
 ## Usage Guide
+
+### Environment setup
+
+We recommend conda as the package and environment manager. If you have conda available, you can use
+
+```shell
+(base)$ conda env create
+```
+
+and this will create a new conda environment named `sroie` on your computer, which will give you all the packages needed for this repo. Remember to activate the environment with
+
+```shell
+(base)$ conda activate sroie
+```
+
+### Tasks
 
 This repository contains our trials and solutions of three tasks. Inside each folder there are documentations of the method we adopted and guide of usage.
 
