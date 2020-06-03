@@ -20,12 +20,24 @@ class TextboxDataset(Dataset):
     def __init__(self, img_dir, box_dir, transform=DEFAULT_TRANSFORM):
         super().__init__()
 
-        self.images = [Image.open(f.path) for f in scandir(img_dir)]
-        self.targets = None  # TODO
+        self.images = list(sorted(scandir(img_dir), key=lambda f: f.name))
+        self.targets = list(sorted(scandir(box_dir), key=lambda f: f.name))
+
         self.transform = transform
 
     def __getitem__(self, idx):
-        return self.transform(self.images[idx])
+        # process image tensor
+        img = Image.open(self.images[idx].path)
+        img_tensor = self.transform(img)
+
+        # process target tensor
+        with open(self.targets[idx], "r") as fo:
+            for line in fo:
+                coordinates = line.strip().split(",", maxsplit=8)[:8]
+                coordinates = [float(c) for c in coordinates]
+                # TODO: put coordinates in a tensor
+
+        return img_tensor, coordinates
 
     def __len__(self):
         return len(self.images)
@@ -33,4 +45,7 @@ class TextboxDataset(Dataset):
 
 if __name__ == "__main__":
     dataset = TextboxDataset("data/img", "data/box")
-    print(dataset[10])
+    print(dataset.images)
+
+    img_tensor, coordinates = dataset[1]
+    print(coordinates)

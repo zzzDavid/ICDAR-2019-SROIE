@@ -20,9 +20,25 @@ class CtpnModel(torch.nn.Module):
         self.fc_3 = torch.nn.Linear(256, n_anchor)
 
     def forward(self, x):
+        # x: N x 3 x 224 x 224
         x = self.features(x)
+        # x: N x 512 x 14 x 14
         x = self.slider(x)
-        # TODO
+        # x: N x 512 x 14 x 14
+        a = None  # TODO: Reshape x tensor here
+        # a: 14 x N' x 512
+        a = self.blstm(a)
+        # a: 14 x N' x 256
+        b = None  # TODO: Reshape a tensor here
+        # b: N x 14 x 14 x 256
+        y_1 = self.fc_1(b)
+        # y_1: N x 14 x 14 x 2k, vertical coordinates
+        y_2 = self.fc_2(b)
+        # y_2: N x 14 x 14 x 2k, confidence scores
+        y_3 = self.fc_3(b)
+        # y_3: N x 14 x 14 x k, side-refinement offsets
+
+        return y_1, y_2, y_3
 
 
 if __name__ == "__main__":
