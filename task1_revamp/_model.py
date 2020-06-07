@@ -62,6 +62,7 @@ class CtpnModel(torch.nn.Module):
 
 
 if __name__ == "__main__":
+    # test code
     model = CtpnModel()
 
     x = torch.randn(1, 3, 448, 224)
