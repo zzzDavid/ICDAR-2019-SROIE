@@ -14,7 +14,7 @@ class CtpnModel(torch.nn.Module):
         self.blstm = torch.nn.LSTM(512, 128, bidirectional=True)
         # fully connected output 1: vertical coordinates
         self.fc_1 = torch.nn.Linear(256, 2 * n_anchor)
-        # fully connected output 2: confidence scores
+        # fully connected output 2: text/non-text scores
         self.fc_2 = torch.nn.Linear(256, 2 * n_anchor)
         # fully connected output 3: side-refinement offsets
         self.fc_3 = torch.nn.Linear(256, n_anchor)
