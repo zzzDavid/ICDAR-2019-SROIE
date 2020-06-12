@@ -20,3 +20,8 @@ def iou(box_1, box_2):
     area_o = (max_x_1 - min_x_0) * (max_y_1 - min_y_0)
 
     return area_i / area_o
+
+
+if __name__ == "__main__":
+    for i in range(10):
+        print(11 // (0.7 ** i))
