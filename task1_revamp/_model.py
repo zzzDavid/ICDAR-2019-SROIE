@@ -14,9 +14,9 @@ class CtpnModel(torch.nn.Module):
         self.slider = torch.nn.Conv2d(512, 512, 3, padding=1)
         # bi-directional LSTM
         self.blstm = torch.nn.LSTM(512, 128, bidirectional=True)
-        # fully connected output 1: vertical coordinates
+        # fully connected output 1: text/non-text scores
         self.fc_1 = torch.nn.Linear(256, n_anchor * 2)
-        # fully connected output 2: text/non-text scores
+        # fully connected output 2: vertical coordinates
         self.fc_2 = torch.nn.Linear(256, n_anchor * 2)
         # fully connected output 3: side-refinement offsets
         self.fc_3 = torch.nn.Linear(256, n_anchor)
@@ -28,8 +28,8 @@ class CtpnModel(torch.nn.Module):
             x -- of shape N x C x H x W, typically N x 3 x 448 x 224. Image tensor.
 
         Outputs:
-            y_1 -- of shape N x H x W x k x 2. Predicted vertical coordinates.
-            y_2 -- of shape N x H x W x k x 2. Predicted text/non-text scores.
+            y_1 -- of shape N x H x W x k x 2. Predicted text/non-text scores.
+            y_2 -- of shape N x H x W x k x 2. Predicted vertical coordinates.
             y_3 -- of shape N x H x W x k x 1. Predicted side-refinement offsets.
         """
         # x: N x 3 x 448 x 224
@@ -55,10 +55,10 @@ class CtpnModel(torch.nn.Module):
 
         y_1 = self.fc_1(c)
         y_1 = y_1.reshape(*y_1.shape[:3], self.n_anchor, 2)
-        # y_1: N x 28 x 14 x k x 2, vertical coordinates
+        # y_1: N x 28 x 14 x k x 2, text/non-text scores
         y_2 = self.fc_2(c)
         y_2 = y_2.reshape(*y_2.shape[:3], self.n_anchor, 2)
-        # y_2: N x 28 x 14 x k x 2, text/non-text scores
+        # y_2: N x 28 x 14 x k x 2, vertical coordinates
         y_3 = self.fc_3(c)
         y_3 = y_3.unsqueeze(4)
         # y_3: N x 28 x 14 x k x 1, side-refinement offsets

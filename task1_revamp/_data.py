@@ -42,20 +42,17 @@ class TextboxDataset(Dataset):
 
         img = self.transform(img)
 
-        # target 1: vertical coordinates
-        # the last dimension is [v_c, v_h] in the original paper
-        tgt_1 = torch.zeros(*GRID_RESOLUTION, self.n_anchor, 2)
+        # target 1: text/non-text classes
+        # the elements are {0: non-text, 1: text}
+        tgt_1 = torch.zeros(*GRID_RESOLUTION, self.n_anchor)
 
-        # target 2: text/non-text scores
-        # the last dimension is [c_text, c_non-text]
+        # target 2: vertical coordinates
+        # the last dimension is [v_c, v_h] in the original paper
         tgt_2 = torch.zeros(*GRID_RESOLUTION, self.n_anchor, 2)
 
         # target 3: side-refinement offsets
         # the last dimension is [o]
         tgt_3 = torch.zeros(*GRID_RESOLUTION, self.n_anchor, 1)
-
-        # initialise all non-text scores as 1
-        tgt_2[:, :, :, 1] = 1
 
         # process target tensors
         with open(self.box_files[idx], "r") as fo:
@@ -78,6 +75,9 @@ class TextboxDataset(Dataset):
                 # anchor number: which anchor has the closest height to the truth box
                 anc_no = (self.anchors - h_box).abs().argmin()
 
+                # set text/non-text classes
+                tgt_1[row_no, col_no[0] : col_no[1], anc_no] = 1
+
                 # set vertical coordinates
                 c_anc = row_no * 16 + 8  # center of anchor
                 h_anc = self.anchors[anc_no]  # height of anchor
@@ -85,12 +85,8 @@ class TextboxDataset(Dataset):
                 v_c = (c_box - c_anc) / h_anc
                 v_h = torch.log(h_box / h_anc)
 
-                tgt_1[row_no, col_no[0] : col_no[1], anc_no, 0] = v_c
-                tgt_1[row_no, col_no[0] : col_no[1], anc_no, 1] = v_h
-
-                # set text/non-text scores
-                tgt_2[row_no, col_no[0] : col_no[1], anc_no, 0] = 1
-                tgt_2[row_no, col_no[0] : col_no[1], anc_no, 1] = 0
+                tgt_2[row_no, col_no[0] : col_no[1], anc_no, 0] = v_c
+                tgt_2[row_no, col_no[0] : col_no[1], anc_no, 1] = v_h
 
                 # set side-refinement offsets
                 # TODO
@@ -104,5 +100,8 @@ class TextboxDataset(Dataset):
 if __name__ == "__main__":
     x = torch.arange(1 * 3 * 2).reshape(1, 3, 2)
     y = x.reshape(1, 3 * 2)
-    print(x)
-    print(y)
+    target = torch.empty(3, dtype=torch.long).random_(5)
+
+    # print(x)
+    # print(y)
+    print(target)
