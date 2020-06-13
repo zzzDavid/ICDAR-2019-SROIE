@@ -30,7 +30,7 @@ class CtpnModel(torch.nn.Module):
         Outputs:
             y_1 -- of shape N x H x W x k x 2. Predicted text/non-text scores.
             y_2 -- of shape N x H x W x k x 2. Predicted vertical coordinates.
-            y_3 -- of shape N x H x W x k x 1. Predicted side-refinement offsets.
+            y_3 -- of shape N x H x W x k. Predicted side-refinement offsets.
         """
         # x: N x 3 x 448 x 224
         x = self.features(x)
@@ -60,8 +60,7 @@ class CtpnModel(torch.nn.Module):
         y_2 = y_2.reshape(*y_2.shape[:3], self.n_anchor, 2)
         # y_2: N x 28 x 14 x k x 2, vertical coordinates
         y_3 = self.fc_3(c)
-        y_3 = y_3.unsqueeze(4)
-        # y_3: N x 28 x 14 x k x 1, side-refinement offsets
+        # y_3: N x 28 x 14 x k, side-refinement offsets
 
         return y_1, y_2, y_3
 
