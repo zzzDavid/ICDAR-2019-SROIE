@@ -7,9 +7,14 @@ from _data import Task1Dataset
 from _model import CtpnModel
 
 
-def train(model, dataset, batch_size=1, n_epoch=10):
+def train(model, dataset, device="cpu", batch_size=1, n_epoch=10):
     train_size = 560
     valid_size = len(dataset) - train_size  # 626 - 560 = 66
+
+    print(f"train_size = {train_size}")
+    print(f"valid_size = {valid_size}")
+
+    model.to(device)
 
     criterion_1 = torch.nn.CrossEntropyLoss()
     criterion_2 = torch.nn.SmoothL1Loss(reduction="sum")
@@ -26,7 +31,9 @@ def train(model, dataset, batch_size=1, n_epoch=10):
         model.train()
         dataloader = DataLoader(subsets[0], batch_size, shuffle=True, num_workers=4)
 
-        for ii, (img, tgt_1, tgt_2, idx_2, tgt_3, idx_3) in enumerate(dataloader):
+        for ii, sample in enumerate(dataloader, start=1):
+            img, tgt_1, tgt_2, idx_2, tgt_3, idx_3 = [x.to(device) for x in sample]
+
             optimizer.zero_grad()
 
             # outputs of model
@@ -37,9 +44,13 @@ def train(model, dataset, batch_size=1, n_epoch=10):
             # print(out_3.shape)
 
             # losses from eq.5 of the original paper
-            loss_1 = 1 * criterion_1(out_1.view(-1, 2), tgt_1.view(-1))
-            loss_2 = 1 * criterion_2(out_2[idx_2], tgt_2[idx_2]) / (idx_2.sum() / 2)
-            loss_3 = 2 * criterion_3(out_3[idx_3], tgt_3[idx_3]) / idx_3.sum()
+            loss_1 = criterion_1(out_1.view(-1, 2), tgt_1.view(-1))
+            loss_2 = criterion_2(out_2[idx_2], tgt_2[idx_2]).true_divide(
+                idx_2.sum().true_divide(2)
+            )
+            loss_3 = 2 * criterion_3(out_3[idx_3], tgt_3[idx_3]).true_divide(
+                idx_3.sum()
+            )
 
             loss = loss_1 + loss_2 + loss_3
 
@@ -54,19 +65,26 @@ def train(model, dataset, batch_size=1, n_epoch=10):
 
         val_loss = 0
 
-        for ii, (img, tgt_1, tgt_2, idx_2, tgt_3, idx_3) in enumerate(dataloader):
+        for ii, sample in enumerate(dataloader, start=1):
+            img, tgt_1, tgt_2, idx_2, tgt_3, idx_3 = [x.to(device) for x in sample]
             # outputs of model
             out_1, out_2, out_3 = model.forward(img)
 
-            loss_1 = 1 * criterion_1(out_1.view(-1, 2), tgt_1.view(-1))
-            loss_2 = 1 * criterion_2(out_2[idx_2], tgt_2[idx_2]) / (idx_2.sum() / 2)
-            loss_3 = 2 * criterion_3(out_3[idx_3], tgt_3[idx_3]) / idx_3.sum()
+            loss_1 = criterion_1(out_1.view(-1, 2), tgt_1.view(-1))
+            loss_2 = criterion_2(out_2[idx_2], tgt_2[idx_2]).true_divide(
+                idx_2.sum().true_divide(2)
+            )
+            loss_3 = 2 * criterion_3(out_3[idx_3], tgt_3[idx_3]).true_divide(
+                idx_3.sum()
+            )
 
             loss = loss_1 + loss_2 + loss_3
 
             val_loss += loss
 
-        val_loss /= valid_size
+            # TODO: calculate accuracy
+
+        val_loss = val_loss.true_divide(valid_size)
 
         print(f"Epoch {i} validation loss: {val_loss}")
 
@@ -80,4 +98,10 @@ if __name__ == "__main__":
     model = CtpnModel(n_anchor)
     dataset = Task1Dataset("data/img", "data/box", n_anchor, resolution)
 
-    train(model, dataset)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f"device = {device}")
+
+    if device == "cpu":
+        train(model, dataset, device, batch_size=1)
+    else:
+        train(model, dataset, device, batch_size=8)

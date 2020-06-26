@@ -92,6 +92,7 @@ class Task1Dataset(Dataset):
                 # print(row_no)
                 # print(col_no)
                 # print(anc_no)
+
                 # set text/non-text classes
                 tgt_1[row_no, col_no[0] : col_no[1], anc_no] = 1
 
