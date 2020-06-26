@@ -53,19 +53,19 @@ class Task1Dataset(Dataset):
 
         # target 1: text/non-text classes
         # the elements are {0: non-text, 1: text}
-        tgt_1 = torch.zeros(*self.grid_resolution, self.n_anchor)
+        tgt_1 = torch.zeros(*self.grid_resolution, self.n_anchor, dtype=torch.long)
 
         # target 2: vertical coordinates
         # the last dimension is [v_c, v_h] in eq.2 of the original paper
         # index 2 marks the locations where target 2 has been filled
         tgt_2 = torch.zeros(*self.grid_resolution, self.n_anchor, 2)
-        idx_2 = torch.zeros_like(tgt_2, dtype=torch.long)
+        idx_2 = torch.zeros_like(tgt_2, dtype=torch.bool)
 
         # target 3: side-refinement offsets
         # the elements are o in eq.4 of the original paper
         # index 3 marks the locations where target 3 has been filled
         tgt_3 = torch.zeros(*self.grid_resolution, self.n_anchor)
-        idx_3 = torch.zeros_like(tgt_3, dtype=torch.long)
+        idx_3 = torch.zeros_like(tgt_3, dtype=torch.bool)
 
         # process target tensors
         with open(self.box_files[idx], "r") as fo:
@@ -106,7 +106,7 @@ class Task1Dataset(Dataset):
                 tgt_2[row_no, col_no[0] : col_no[1], anc_no, 0] = v_c
                 tgt_2[row_no, col_no[0] : col_no[1], anc_no, 1] = v_h
 
-                idx_2[row_no, col_no[0] : col_no[1], anc_no, :] = 1
+                idx_2[row_no, col_no[0] : col_no[1], anc_no, :] = True
 
                 # set side-refinement offsets
                 for x_side in [box[0], box[2]]:
@@ -121,7 +121,7 @@ class Task1Dataset(Dataset):
                     # print(o)
 
                     tgt_3[row_no, col_range, anc_no] = o
-                    idx_3[row_no, col_range, anc_no] = 1
+                    idx_3[row_no, col_range, anc_no] = True
 
         return img, tgt_1, tgt_2, idx_2, tgt_3, idx_3
 
