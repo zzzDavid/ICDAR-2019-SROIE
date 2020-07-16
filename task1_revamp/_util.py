@@ -22,6 +22,13 @@ def iou(box_1, box_2):
     return area_i / area_o
 
 
+def outputs_to_boxes(y_1, y_2, y_3, threshold=0.75):
+    """CTPN Model Outputs to Textboxes Tensor
+    Transform CTPN model outputs (see _model.CtpnModel.forward) to a tensor of [N x 4].
+    """
+    pass
+
+
 if __name__ == "__main__":
     for i in range(10):
         print(11 // (0.7 ** i))

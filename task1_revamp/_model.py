@@ -13,7 +13,7 @@ class CtpnModel(torch.nn.Module):
         # the sliding window upon the last features of VGG16
         self.slider = torch.nn.Conv2d(512, 512, 3, padding=1)
         # bi-directional LSTM
-        self.blstm = torch.nn.LSTM(512, 128, bidirectional=True)
+        self.bilstm = torch.nn.LSTM(512, 128, bidirectional=True)
         # fully connected output 1: text/non-text scores
         self.fc_1 = torch.nn.Linear(256, n_anchor * 2)
         # fully connected output 2: vertical coordinates
@@ -44,7 +44,7 @@ class CtpnModel(torch.nn.Module):
         # use BiLSTM on each row and collect them in c
         c = []
         for a in x:
-            b, _ = self.blstm(a)
+            b, _ = self.bilstm(a)
             c.append(b)
 
         c = torch.stack(c)
@@ -76,9 +76,9 @@ if __name__ == "__main__":
     print(y_2.shape)
     print(y_3.shape)
 
-    # blstm = torch.nn.LSTM(512, 128, bidirectional=True)
+    # bilstm = torch.nn.LSTM(512, 128, bidirectional=True)
 
     # x = torch.randn(14, 1, 512)
-    # y, h = blstm(x)
+    # y, h = bilstm(x)
 
     # print(repr(h))
