@@ -31,8 +31,8 @@ class Task1Dataset(Dataset):
         self.box_files = list(sorted(scandir(box_dir), key=lambda f: f.name))
 
         self.n_anchor = n_anchor
-        # sizes(heights) of anchors have been reduced from the original paper
-        # now they are like: [5, 7, 10, 14, 20, ...] (times sqrt(2) each time)
+        # heights of anchors have been reduced from the original paper
+        # now they are like: [5, 7, 10, 14, 20, ...] (multiply by sqrt(2) each)
         self.anchors = torch.tensor([5 * (2 ** (i / 2)) for i in range(n_anchor)])
 
         self.resolution = resolution
